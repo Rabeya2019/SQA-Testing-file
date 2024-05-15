@@ -1,0 +1,59 @@
+
+namespace Tests\Feature;
+
+use App\User;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Arr;
+use Tests\TestCase;
+
+
+class AdminLoginRegisterTest extends TestCase
+{
+    use RefreshDatabase; // Use RefreshDatabase trait to reset the database after each test
+
+    public function testAdminInvalidLogin()
+    {
+
+        $invalidCredentials = [
+            'email' => 'admi@example.com',
+            'password' => 'password',
+        ];
+        $response = $this->post('/user/login', $invalidCredentials);
+        $response->assertStatus(302);
+
+    }
+    public function testAdminLoginWithValidCredentials()
+    {
+        $response = $this->post('/user/login', [
+            'email' => 'admin@mail.com',
+            'password' => 'codeastro.com',
+        ]);
+        $response->assertStatus(302);
+
+    }
+
+    public function testAdminRegisterWithValidCredentials()
+    {
+
+        $adminData = [
+            'name' => 'admin1',
+            'email' => 'admin1@mail.com',
+            'password' => 'admin1password',
+            'password_confirmation' => 'admin1password',
+        ];
+
+
+        $response = $this->post('/user/register', $adminData);
+
+
+        $response->assertStatus(302);
+
+        $this->assertDatabaseHas('users', [
+            'name' => 'admin1',
+            'email' => 'admin1@mail.com',
+
+        ]);
+    }
+}
